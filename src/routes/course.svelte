@@ -34,6 +34,7 @@
   import Player from '@vimeo/player';
   import axios from 'axios';
   import { query } from '../store.js';
+  import NoteList from '../components/NoteList.svelte';
 
   let player;
 
