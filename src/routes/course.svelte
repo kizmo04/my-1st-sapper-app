@@ -12,6 +12,14 @@
   {#if values}
     {#each values.data.courses as value, index}
       <p>{value.title}</p>
+      <p>{value.description}</p>
+      {#each value.content as content, index}
+        <p>{content.module}</p>
+        {#each content.clips as clip, index}
+          <p>{index + 1}강</p>
+          <p>{clip}</p>
+        {/each}
+      {/each}
     {/each}
   {/if}
   <!-- <ul>
@@ -44,8 +52,9 @@
   let hacker, searchQuery;
 
   function handleChange (event) {
-    console.log('change')
-    console.log(event.target.value);
+    axios.post(`http://localhost:3000/api/clips/new`, {
+      vimeo_id: event.target.value
+    });
   };
 
   var options01 = {

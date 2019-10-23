@@ -1,7 +1,22 @@
 import mongoose from 'mongoose';
-import { online } from '@vanillacoding/models';
 
-const { schema, options } = online.Course;
-const CourseSchema = new mongoose.Schema(schema, options);
+const CourseSchema = new mongoose.Schema({
+  title: String,
+  price: Number,
+  image_url: String,
+  description: String,
+  content: [{
+    module: String,
+    clips: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Clip'
+    }]
+  }]
+}, {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
+  }
+});
 
 export default mongoose.model('Course', CourseSchema);

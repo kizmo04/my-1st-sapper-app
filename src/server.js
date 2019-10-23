@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import apiRoutes from './apis/routes';
 import bodyParser from 'body-parser';
 import Course from './apis/models/Course';
+import Clip from './apis/models/Clip';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,7 +28,11 @@ db.once('open', () => {
 });
 
 const server = express(); // You can also use Express
+
+server.use(bodyParser());
+
 const courseRouter = express.Router();
+const clipRouter = express.Router();
 let routes = express.Router();
 
 server.use(express.static('static'));
@@ -38,11 +43,35 @@ server.use(express.static('static'));
 
 courseRouter.get('/all', async (req, res, next) => {
   const courses = await Course.find();
-
+  console.log(courses);
   res.json({ courses });
 });
 
+clipRouter.post('/new', async (req, res, next) => {
+  const newClip = new Clip({
+    vimeo_id: req.body.vimeo_id
+  });
+
+  await newClip.save();
+
+  const newCourse = new Course({
+    title: '피카츄 과정',
+    price: 123234556,
+    image_url: 'https://secure.img1-fg.wfcdn.com/im/02238154/compr-r85/8470/84707680/pokemon-pikachu-wall-decal.jpg',
+    description: '피카츄가 되는 그 날까지 끝까지 책임지겠습니다.',
+    content: [{
+      module: '전기 생산 기초'
+    }]
+  });
+
+  newCourse.content[0].clips.push(newClip);
+
+  await newCourse.save();
+});
+
 routes.use('/courses', courseRouter);
+routes.use('/clips', clipRouter);
+
 
 
 // server
