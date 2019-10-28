@@ -34,15 +34,25 @@
 <input type="text" bind:value={$query} on:change={handleChange}>
 <p>검색어: {$query}</p>
 
-<div id="video-first"></div>
+<div class="clip-container">
+  <div id="video-first"></div>
+  <NoteList class="note-list" notes={$notes} handleNoteEntryClick={handleNoteEntryClick} handleNoteInputChange={handleNoteInputChange} handleNoteInputInput={handleNoteInputInput}/>
+</div>
+
+<style>
+  #video-first {
+    float: left;
+  }
+</style>
 
 <script type="text/javascript">
   import { onMount } from 'svelte';
   // import Vimeo from 'vimeo';
   import Player from '@vimeo/player';
   import axios from 'axios';
-  import { query } from '../store.js';
+  import { query, notes } from '../store.js';
   import NoteList from '../components/NoteList.svelte';
+  import { get } from 'svelte/store';
 
   let player;
 
@@ -57,6 +67,27 @@
     });
   };
 
+  async function handleNoteInputInput () {
+    await player.pause();
+  }
+
+  async function handleNoteInputChange (e) {
+    // await player.pause();
+    const res = await axios.post('http://localhost:3000/api/notes/new', {
+      content: e.target.value,
+      clip_timestamp: await player.getCurrentTime()
+    });
+
+    e.target.value = '';
+    const value = get(notes);
+    notes.set([...value, res.data.note]);
+    await player.play();
+  }
+
+  async function handleNoteEntryClick (e) {
+    await player.setCurrentTime(parseInt(e.target.dataset.stamp));
+  }
+
   var options01 = {
     id: 111172,
     width: 500
@@ -69,8 +100,6 @@
 
     // hacker = fetch(`https://api.vimeo.com/videos?query=${query}`);
 
-    // const vimeo = new Vimeo('0cc6ad77f95ff8c9f3c41324d67f56d5de8e14e2', 'j+h52vhrdpEGerZ37h4FO08JLNiQ2SvY7nX4J9xdtiGYMR5GnCijeH/FyrkRvhdkMIMys/3Nl7B7Crr7lfSujb3Ovj1Ztz8/bpl5Jh1fz2XOYlnt+kPzDMJLUXgbnJSN', '1f6e3464f3f431ac5d733d18557fdf2d');
-
     // hacker = vimeo.request({
       // method: 'GET',
       // path: `https://api.vimeo.com/videos?query=${query}`
@@ -79,6 +108,8 @@
     player = new Player('video-first', options01);
 
     player.setVolume(0);
+    player.setLoop(true);
+    player.play();
 
     player.on('play', () => {
       console.log('play!');
@@ -93,6 +124,6 @@
   //   const requestBestStories = BestStoryIds.slice(0, 50).map(id => fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`));
   //   datas = await Promise.all(requestBestStories);
   //   stories = await Promise.all(datas.map(data => data.json()));
-  //   // isLoading = false;
+  //   isLoading = false;
   // });
 </script>

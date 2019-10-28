@@ -8,6 +8,7 @@ import bodyParser from 'body-parser';
 import Course from './apis/models/Course';
 import Clip from './apis/models/Clip';
 import dotenv from 'dotenv';
+import Note from './apis/models/Note';
 
 dotenv.config();
 
@@ -33,17 +34,35 @@ server.use(bodyParser());
 
 const courseRouter = express.Router();
 const clipRouter = express.Router();
+const noteRouter = express.Router();
 let routes = express.Router();
 
 server.use(express.static('static'));
 
+noteRouter.get('/all', async(req, res, next) => {
+  const notes = await Note.find({});
 
-// server.use(bodyParser);
-// apiRoutes(server);
+  res.json({ notes });
+});
+
+noteRouter.post('/new', async(req, res, next) => {
+  const { clip_timestamp, content } = req.body;
+
+  const newNote = new Note({
+    clip_timestamp,
+    content
+  });
+
+  await newNote.save();
+
+  res.json({
+    note: newNote
+  });
+});
 
 courseRouter.get('/all', async (req, res, next) => {
   const courses = await Course.find();
-  console.log(courses);
+
   res.json({ courses });
 });
 
@@ -69,6 +88,7 @@ clipRouter.post('/new', async (req, res, next) => {
   await newCourse.save();
 });
 
+routes.use('/notes', noteRouter);
 routes.use('/courses', courseRouter);
 routes.use('/clips', clipRouter);
 
@@ -90,5 +110,4 @@ server.use(sapper.middleware());
 
 server.listen(PORT, err => {
   if (err) console.log('error', err);
-})
-// console.log(server)
+});
