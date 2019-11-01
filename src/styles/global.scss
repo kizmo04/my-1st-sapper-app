@@ -1,0 +1,15 @@
+@import "./theme.scss";
+
+* {
+ box-sizing: border-box;
+ background-color: $main-background-color;
+}
+
+html, body {
+ margin: 0;
+ padding: 0;
+}
+
+div {
+  color: $main-color;
+}

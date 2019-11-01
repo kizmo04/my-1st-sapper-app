@@ -25,13 +25,16 @@
   });
 </script>
 
-<style>
+<style lang="scss">
+$note-list-border: 3px solid yellow;
+
 .note-entry {
   cursor: pointer;
 }
 
 .note-list {
   overflow-y: scroll;
+  border: $note-list-border;
 }
 
 h1 {

@@ -2,6 +2,15 @@ const webpack = require('webpack');
 const path = require('path');
 const config = require('sapper/config/webpack.js');
 const pkg = require('./package.json');
+const svelteProprocess = require('svelte-preprocess');
+const preprocess = svelteProprocess({
+  scss: {
+    includePaths: ['src'],
+  },
+  postcss: {
+    plugins: [require('autoprefixer')],
+  },
+});
 
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
@@ -24,7 +33,8 @@ module.exports = {
             options: {
               dev,
               hydratable: true,
-              hotReload: false // pending https://github.com/sveltejs/svelte/issues/2377
+              hotReload: false, // pending https://github.com/sveltejs/svelte/issues/2377
+              preprocess,
             }
           }
         }
@@ -57,7 +67,8 @@ module.exports = {
             options: {
               css: false,
               generate: 'ssr',
-              dev
+              dev,
+              preprocess,
             }
           }
         }
