@@ -1,3 +1,6 @@
+<script>
+  import { recentlyViewed } from '../store.js';
+</script>
 <style lang="scss">
   $pink: pink;
 
@@ -47,3 +50,4 @@
 </figure>
 
 <p><strong>Try editing this file (src/routes/index.svelte) to test live reloading.</strong></p>
+<p>recently viewed: {Math.floor(($recentlyViewed.percent || 0) * 100)}%</p>

@@ -46,15 +46,16 @@
 </style>
 
 <script type="text/javascript">
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   // import Vimeo from 'vimeo';
   import Player from '@vimeo/player';
   import axios from 'axios';
-  import { query, notes } from '../store.js';
+  import { query, notes,recentlyViewed } from '../store.js';
   import NoteList from '../components/NoteList.svelte';
   import { get } from 'svelte/store';
 
   let player;
+  let recentlyTimestamp;
 
   let stories = [];
   // let isLoading = false;
@@ -111,9 +112,17 @@
     player.setLoop(true);
     player.play();
 
-    player.on('play', () => {
-      console.log('play!');
+    player.on('timeupdate', e => {
+      recentlyTimestamp = e;
     });
+
+    // player.on('play', () => {
+    //   console.log('play!');
+    // });
+  });
+
+  onDestroy(() => {
+    recentlyViewed.set(recentlyTimestamp);
   });
 
   // onMount(async () => {

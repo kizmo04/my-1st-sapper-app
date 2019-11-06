@@ -1,18 +1,7 @@
-<script context="module">
-  // export async function preload({ host, path, params, query }, session) {
-  //   const res = await this.fetch('http://localhost:3000/api/notes/all');
-  //   if (res.status === 200) {
-  //     const notes = await res.json();
-  //     return { notes };
-  //   }
-
-  //   this.error(404, 'Not found');
-  // }
-</script>
 <script type="text/javascript">
   import { onMount } from 'svelte';
   import axios from 'axios';
-  import { notes } from '../store.js';
+  import { notes, events } from '../store.js';
 
   let content;
   export let handleNoteInputChange;
@@ -22,6 +11,16 @@
   onMount(async () => {
     const res = await axios.get('http://localhost:3000/api/notes/all');
     notes.set(res.data.notes);
+
+    const resEvents = await axios.post('http://localhost:4000/graphql', {
+      query: `query {
+                events {
+                  title
+                }
+              }`
+    });
+
+    events.set(resEvents.data.data.events);
   });
 </script>
 
@@ -67,3 +66,7 @@ ul {
   <input type="text" bind:value={content} on:change={handleNoteInputChange} on:input={handleNoteInputInput}>
   <p>엔터키로 노트 입력</p>
 </ul>
+
+{#each $events as event}
+  <p>{event.title}</p>
+{/each}
